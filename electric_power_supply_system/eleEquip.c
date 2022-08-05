@@ -53,7 +53,7 @@ int main()
 	clientSocket = socket(AF_INET, SOCK_STREAM, 0);
 	if (clientSocket < 0)
 	{
-		printf("[-]Lỗi kết nối.\n");
+		printf("[-]Connect Error.\n");
 		exit(1);
 	}
 
@@ -64,10 +64,10 @@ int main()
 
 	if (connect(clientSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) < 0)
 	{
-		printf("[-]Lỗi kết nối.\n");
+		printf("[-]Connect Error.\n");
 		exit(1);
 	}
-	printf("[+]Đã kết nối với connectMng.\n");
+	printf("[+]Connected success to connectMng.\n");
 
 	while (1)
 	{
@@ -85,7 +85,7 @@ void showMenuDevices()
 	{
 		choice = 0;
 		printf("-----Menu-----\n");
-		printf("Chọn thiết bị kết nối:\n");
+		printf("Select Devices:\n");
 		int i;
 		printf("1. TV\n");
 		printf("2. AR\n");
@@ -94,7 +94,7 @@ void showMenuDevices()
 		printf("5. LIGHT\n");
 		printf("6. Quit\n\n");
 		printf("-----------------\n");
-		printf("Lựa chọn của bạn: \n");
+		printf("Enter your choice: \n");
 		while (choice == 0)
 		{
 			if (scanf("%d", &choice) < 1)
@@ -104,8 +104,8 @@ void showMenuDevices()
 			if (choice < 1 || choice > 6)
 			{
 				choice = 0;
-				printf("Không hợp lệ.\n");
-				printf("Nhập lại lựa chọn: ");
+				printf("Unknow choice.\n");
+				printf("Enter your choice again: ");
 			}
 			while ((c = getchar()) != '\n')
 				;
@@ -133,10 +133,10 @@ void showMenuAction(int deviceID)
 		choice = 0;
 		while (choice == 0)
 		{
-			printf("Chọn hành động:\n");
-			printf("1. Chạy chế độ mặc định \n");
-			printf("2. Chạy chế độ tiết kiệm điện\n");
-			printf("3. Tắt thiết bị và thoát\n");
+			printf("Select Action:\n");
+			printf("1. run default mode \n");
+			printf("2. Run power saving mode\n");
+			printf("3. Turn off the device and exit\n");
 			printf("Your choice: ");
 			if (kbhit())
 			{
@@ -174,7 +174,7 @@ void getResponse()
 	int n = recv(clientSocket, serverResponse, MAXLINE, 0);
 	if (n == 0)
 	{
-		perror("connectMng đã kết thúc\n\n");
+		perror("connectMng over \n\n");
 		exit(4);
 	}
 	serverResponse[n] = '\0';
@@ -235,8 +235,7 @@ int runDevice(int deviceID, int mode)
 		send(clientSocket, command, strlen(command), 0);
 		getResponse();
 	}
-
-	printf("Đã nhận thành công kết quả trả về từ connectMng\n");
+	printf("Sucess Geting resulrt from connectMng\n");
 	memset(response, 0, sizeof(response));
 	strcpy(response, serverResponse);
 	token = strtok(response, "|");
@@ -255,7 +254,7 @@ int runDevice(int deviceID, int mode)
 		{
 			while (countDown > 0)
 			{
-				printf("Hệ thống quá tải.\nThiết bị sẽ bị tắt trong %d giây.\n", countDown);
+				printf("The system is overloaded.\nThe device will be turned off in %d seconds.\n", countDown);
 				sleep(1);
 				countDown--;
 				if (countDown == 0)
@@ -267,12 +266,12 @@ int runDevice(int deviceID, int mode)
 		}
 		else if (strcmp(equipStatus, "SAVING") == 0)
 		{
-			printf("Hệ thống quá tải.\nThiết bị sẽ chạy ở chế độ %s mode.\n", equipStatus);
+			printf("The system is overloaded.\nThe device will run with %s mode.\n", equipStatus);
 		}
 	}
 	else
 	{
-		printf("Hệ thống có trạng thái %s.\n Thiết bị đang chạy ở chế độ %s mode và %d W\n", systemStatus, equipStatus, voltage);
+		printf("The system is %s.\n he device will run with %s mode và %d W\n", systemStatus, equipStatus, voltage);
 	}
 
 	if (strcmp(equipStatus, "NORMAL") == 0)

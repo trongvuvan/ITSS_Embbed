@@ -99,14 +99,14 @@ void powerSupply(command cmd)
     msgId2 = msgget(key2, 0666 | IPC_CREAT);
     msgId3 = msgget(key3, 0666 | IPC_CREAT);
 
-    printf("Đang gửi message tới elePowerCtrl...\n\n");
+    printf("Sending message to elePowerCtrl...\n\n");
     // nếu code nhận từ client là STOP
     if (strcmp(cmd.code, "STOP") == 0)
     {
         sprintf(message1.mesg_text, "%d|%s|", deviceId, "OFF");
         // msgsnd để gửi message tới elecPowerCtrl
         message1.mesg_type = msgtype;
-        if(msgsnd(msgId1, &message1, sizeof(message1.mesg_text), 0) == -1) printf("Failed: Gửi message tới elePowerCtrl\n\n");
+        if(msgsnd(msgId1, &message1, sizeof(message1.mesg_text), 0) == -1) printf("Failed: Send message to elePowerCtrl\n\n");
     }
     // nếu code là ON
     else
@@ -114,17 +114,17 @@ void powerSupply(command cmd)
         sprintf(message1.mesg_text, "%d|%s|", deviceId, cmd.params[1]);
         // msgsnd để gửi message tới elePowerCtrl
         message1.mesg_type = msgtype;
-        if(msgsnd(msgId1, &message1, sizeof(message1.mesg_text), 0) == -1) printf("Failed: Gửi message tới elePowerCtrl\n\n");
+        if(msgsnd(msgId1, &message1, sizeof(message1.mesg_text), 0) == -1) printf("Failed: Send message to elePowerCtrl\n\n");
     }
     // msgrcv để lấy message từ elePowerCtrl: "[systemInfo.status]|[equipInfo.currentSupply]|[equipInfo.status]"
     if (msgrcv(msgId3, &message3, sizeof(message3), 1, 0) != -1)
     {
-        printf("Success: Lấy message từ elePowerCtrl\n\n");
+        printf("Success: Get message from elePowerCtrl \n\n");
         memset(infoBuffer, 0, sizeof(infoBuffer));
         strcpy(infoBuffer, message3.mesg_text);
         // gửi message3 nhận được cho client
         send(connectSock, infoBuffer, sizeof(infoBuffer), 0);
-        printf("Success: Trả về kết quả cho client\n\n");
+        printf("Success: Return result to client \n\n");
     }
 
     //send(connectSock, KEY, 4, 0);
@@ -135,7 +135,7 @@ void sig_chld(int singno)
     pid_t pid;
     int stat;
     while ((pid = waitpid(-1, &stat, WNOHANG)) > 0)
-        printf("Huỷ tiến trình con %d\n", pid);
+        printf("Destroy child process  %d\n", pid);
     return;
 }
 
@@ -171,10 +171,10 @@ int main()
     int currentVoltage = 0;
     // connectMng
     // khởi tạo kết nối IP
-    printf("Đang khởi tạo kết nối IP...\n\n");
+    printf("Connecting IP...\n\n");
     if ((listenSock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
     {
-        printf("Xảy ra lỗi khi khởi tạo socket\n");
+        printf("Fail when creating socket\n");
         exit(1);
     }
     serverAddr.sin_family = AF_INET;
@@ -187,7 +187,7 @@ int main()
 
     if (bind(listenSock, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) < 0)
     {
-        printf("Xảy ra lỗi khi bind địa chỉ\n");
+        printf("Fail when bindling adress \n");
         exit(2);
     }
 
@@ -197,7 +197,7 @@ int main()
     // nhận kết nối từ client
     while (1)
     {
-        printf("Đang chấp nhận kết nối...\n\n");
+        printf("Connect accepting...\n\n");
         connectSock = accept(listenSock, (struct sockaddr *)&clientAddr, &clilen);
         // tạo tiến trình con
         if ((pid = fork()) == 0)

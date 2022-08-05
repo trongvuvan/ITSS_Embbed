@@ -66,7 +66,7 @@ enum t_systemStatus
 
 int main()
 {
-    printf("Đang khởi động...\n");
+    printf("Starting....\n");
     key_t key1, key2, key3, key4;
     int msgId1, msgId2, msgId3, msgId4;
     char messageBuffer[100] = "", infoBuffer[100] = "";
@@ -75,7 +75,7 @@ int main()
 
     // ftok để tạo khoá System V IPC dùng cho message queue
     key1 = ftok("keyfile", 1); // queue nhận từ connectMng
-    key2 = ftok("keyfile", 2); //  queue để gửi tới powerSupplyInfoAccess
+    key2 = ftok("keyfile", 2); // queue để gửi tới powerSupplyInfoAccess
     key3 = ftok("keyfile", 3); // queue gửi tới powerSupply
     key4 = ftok("keyfile", 4); // queue đọc từ powerSupplyInfoAccess
     //printf("Success: Getting message queue keys %d %d %d %d\n", key1, key2, key3, key4);
@@ -95,7 +95,7 @@ int main()
         memset(message1.mesg_text, 0, sizeof(message1.mesg_text));
         if (msgrcv(msgId1, &message1, sizeof(message1), 1, 0) != -1)
         {
-            printf("\nSuccess: Nhận được message từ powerSupply\n");
+            printf("\nSuccess: Get message from powerSupply\n");
             int deviceID, requestedSupply;
             char requestedMode[10];
             t_systemInfo systemInfo;
@@ -112,19 +112,19 @@ int main()
             strcpy(requestedMode, token);
 
             // Gửi yêu cầu lấy thông tin hệ thống từ powerSupplyInfoAccess
-            printf("Pending: Đang lấy thông tin hệ thống...\n");
+            printf("Pending: Getting information from system...\n");
             sprintf(message2.mesg_text, "%d|%d|", T_READ, T_SYSTEM);
             message2.mesg_type = msgtype;
             // msgsnd để gửi message tới powerSupplyInfoAccess
             msgsnd(msgId2, &message2, sizeof(message2.mesg_text), 0);
-            printf("Success: Gửi message tới powerSupplyInfoAccess\n");
+            printf("Success: Sending message to powerSupplyInfoAccess\n");
 
             // nhận message từ powerSupplyInfoAccess
             message4.mesg_type = msgtype;
             memset(message4.mesg_text, 0, sizeof(message4.mesg_text));
             if (msgrcv(msgId4, &message4, sizeof(message4), 1, 0) != -1)
             {
-                printf("Success: Nhận được thông tin hệ thống từ powerSupplyInfoAccess\n");
+                printf("Success: Get infomation from powerSupplyInfoAccess\n");
                 memset(infoBuffer, 0, sizeof(infoBuffer));
                 strcpy(infoBuffer, message4.mesg_text);
                 // lấy thông tin
@@ -143,7 +143,7 @@ int main()
             }
 
             // Gửi yêu cầu thông tin thiết bị tới powerSupplyInfoAccess
-            printf("Pending: Đang lấy thông tin thiết bị...\n");
+            printf("Pending: Getting device's infomations...\n");
             sprintf(message2.mesg_text, "%d|%d|%d|", T_READ, T_DEVICE, deviceID);
             message2.mesg_type = msgtype;
             // msgsnd để gửi message tới powerSupplyInfoAccess
@@ -155,7 +155,7 @@ int main()
             memset(message4.mesg_text, 0, sizeof(message4.mesg_text));
             if (msgrcv(msgId4, &message4, sizeof(message4), 1, 0) != -1)
             {
-                printf("Success: Nhận được thông tin thiết bị từ powerSupplyInfoAccess..\n");
+                printf("Success: Get device's infomations from powerSupplyInfoAccess..\n");
                 memset(infoBuffer, 0, sizeof(infoBuffer));
                 strcpy(infoBuffer, message4.mesg_text);
                 // lấy thông tin thiết bị
@@ -197,7 +197,7 @@ int main()
                 sprintf(message3.mesg_text, "%s|%d|%s|", systemInfo.status, equipInfo.currentSupply, equipInfo.status);
                 // msgsnd gửi message tới powerSupply
                 msgsnd(msgId3, &message3, sizeof(message3.mesg_text), 0);
-                printf("Success: Đã gửi message tới powerSupply...\n");
+                printf("Success: Send message to powerSupply...\n");
             }
             // kiểm tra hạn mức cung cấp
             else
@@ -253,12 +253,12 @@ int main()
                     // gửi message tới powerSupplyInfoAccess
                     sprintf(message2.mesg_text, "%d|%d|%d|%d|", T_WRITE, T_DEVICE, deviceID, -1);
                     msgsnd(msgId2, &message2, sizeof(message2.mesg_text), 0);
-                    printf("Success: Đã gửi message tới powerSupplyInfoAccess\n");
+                    printf("Success: Send message to powerSupplyInfoAccess\n");
 
                     // nhận message từ powerSupplyInfoAccess
                     if (msgrcv(msgId4, &message4, sizeof(message4), 1, 0) != -1)
                     {
-                        printf("Success: Đã nhận message từ powerSupplyInfoAccess\n");
+                        printf("Success: Get message from powerSupplyInfoAccess\n");
                         memset(infoBuffer, 0, sizeof(infoBuffer));
                         strcpy(infoBuffer, message4.mesg_text);
 
@@ -275,7 +275,7 @@ int main()
                             memset(message2.mesg_text, 0, sizeof(message2.mesg_text));
                             sprintf(message2.mesg_text, "%d|%d|%d|%d|%s|", T_WRITE, T_DEVICE, deviceID, equipInfo.currentSupply, equipInfo.status);
                             msgsnd(msgId2, &message2, sizeof(message2.mesg_text), 0);
-                            printf("Success: Đã gửi message tới powerSupplyInfoAccess\n");
+                            printf("Success:Send message to powerSupplyInfoAccess\n");
 
                             totalPower -= equipInfo.savingVoltage;
                             // nếu tổng > warning
@@ -298,14 +298,14 @@ int main()
                             sprintf(message2.mesg_text, "%d|%d|%d|%s|", T_WRITE, T_SYSTEM, totalPower, systemInfo.status);
                             message2.mesg_type = msgtype;
                             msgsnd(msgId2, &message2, sizeof(message2.mesg_text), 0);
-                            printf("Success: Đã gửi message tới powerSupplyInfoAccess\n");
+                            printf("Success: Send message to powerSupplyInfoAccess\n");
 
                             // gửi message tới powerSupply
                             memset(message3.mesg_text, 0, sizeof(message3.mesg_text));
                             message3.mesg_type = msgtype;
                             sprintf(message3.mesg_text, "%s|%d|%s|", "OVER", equipInfo.currentSupply, equipInfo.status);
                             msgsnd(msgId3, &message3, sizeof(message3), 0);
-                            printf("Success: Đã gửi message tới powerSupplyInfoAccess\n");
+                            printf("Success:Send message to powerSupplyInfoAccess\n");
                         }
                         else
                         {
@@ -328,7 +328,7 @@ int main()
                             sprintf(message2.mesg_text, "%d|%d|%d|%s|", T_WRITE, T_SYSTEM, totalPower, systemInfo.status);
                             message2.mesg_type = msgtype;
                             msgsnd(msgId2, &message2, sizeof(message2.mesg_text), 0);
-                            printf("Success: Đã gửi message tới powerSupplyInfoAccess\n");
+                            printf("Success: Send message to powerSupplyInfoAccess\n");
 
                             // gửi message tới powerSupply
                             memset(equipInfo.status, 0, sizeof(equipInfo.status));
@@ -339,7 +339,7 @@ int main()
                             message3.mesg_type = msgtype;
                             sprintf(message3.mesg_text, "%s|%d|%s|", "OVER", equipInfo.currentSupply, equipInfo.status);
                             msgsnd(msgId3, &message3, sizeof(message3.mesg_text), 0);
-                            printf("Success: Đã gửi message tới powerSupplyInfoAccess\n");
+                            printf("Success: Send message to powerSupplyInfoAccess\n");
                         }
                     }
                 }
