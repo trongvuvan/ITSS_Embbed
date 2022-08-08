@@ -91,6 +91,7 @@ int main()
     while (1)
     {
         // msgrcv để lấy message từ powerSupply
+        // msgrcv Hàm hệ thống thống này giúp lấy dữ liệu ra khỏi môtj message queue
         message1.mesg_type = msgtype;
         memset(message1.mesg_text, 0, sizeof(message1.mesg_text));
         if (msgrcv(msgId1, &message1, sizeof(message1), 1, 0) != -1)
@@ -151,6 +152,7 @@ int main()
             printf("Success: Sending Message to Power Supply Info Access...\n");
 
             // nhận message từ powerSupplyInfoAccess
+            
             message4.mesg_type = msgtype;
             memset(message4.mesg_text, 0, sizeof(message4.mesg_text));
             if (msgrcv(msgId4, &message4, sizeof(message4), 1, 0) != -1)

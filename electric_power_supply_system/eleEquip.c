@@ -87,22 +87,24 @@ void showMenuDevices()
 		printf("-----Menu-----\n");
 		printf("Select Devices:\n");
 		int i;
-		printf("1. TV\n");
-		printf("2. AR\n");
-		printf("3. PC\n");
-		printf("4. IRON\n");
-		printf("5. LIGHT\n");
-		printf("6. Quit\n\n");
-		printf("-----------------\n");
+		printf("1. TV 				\n");
+		printf("2. PS5 				\n");
+		printf("3. PC 				\n");
+		printf("4. IRON				\n");
+		printf("5. LIGHT			\n");
+		printf("6. Quit				\n\n");
+		printf("-----------------	\n");
 		printf("Enter your choice: \n");
 		while (choice == 0)
 		{
 			if (scanf("%d", &choice) < 1)
 			{
+				getchar();
 				choice = 0;
 			}
 			if (choice < 1 || choice > 6)
 			{
+				getchar();
 				choice = 0;
 				printf("Unknow choice.\n");
 				printf("Enter your choice again: ");
@@ -140,7 +142,7 @@ void showMenuAction(int deviceID)
 			printf("Your choice: ");
 			if (kbhit())
 			{
-				c = getch();
+				c = getch();getchar();
 				choice = c - '0';
 				if (choice < 1 || choice > 4)
 				{
